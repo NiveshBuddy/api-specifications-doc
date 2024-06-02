@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API Documentation</title>
+  <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #spec-selector {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Select API Specification</h1>
+  <select id="spec-selector">
+    <option value="">Select a spec</option>
+    <option value="user-management/v1-openapi.yaml">User Management V1</option>
+    <!-- Add more options as needed -->
+  </select>
+  <div id="redoc-container"></div>
+  <script>
+    document.getElementById('spec-selector').addEventListener('change', function() {
+      var specUrl = this.value;
+      if (specUrl) {
+        Redoc.init(specUrl, {}, document.getElementById('redoc-container'));
+      } else {
+        document.getElementById('redoc-container').innerHTML = '';
+      }
+    });
+  </script>
+</body>
+</html>
