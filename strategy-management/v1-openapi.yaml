@@ -212,9 +212,9 @@ components:
           items:
             type: object
             properties:
-              parameterName:
+              name:
                 type: string
-              parameterValue:
+              value:
                 type: string
         createdAt:
           type: string
@@ -249,6 +249,8 @@ components:
               displayOrder:
                 type: integer
         isMultiSelect:
+          type: boolean
+        isRequired:
           type: boolean
         createdAt:
           type: string
