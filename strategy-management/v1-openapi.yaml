@@ -1,35 +1,14 @@
 openapi: 3.0.3
 info:
-  title: Strategy API
+  title: Strategy Management API
   version: 1.0.0
 paths:
   /api/strategy-management/v1/strategies:
     get:
       tags:
         - Strategy Management
-      summary: List all strategies
-      description: Retrieve a list of all strategies, both system-defined and user-defined.
-      parameters:
-        - name: strategyType
-          in: query
-          required: false
-          schema:
-            type: string
-          description: Filter by strategy type.
-        - name: type
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [system, user]
-          description: Filter by strategy type (system or user).
-        - name: visibility
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [private, public, restricted]
-          description: Filter by visibility.
+      summary: List strategies
+      description: Retrieve a list of strategies.
       responses:
         '200':
           description: A list of strategies
@@ -42,8 +21,8 @@ paths:
     post:
       tags:
         - Strategy Management
-      summary: Create a new strategy
-      description: Create a new custom strategy.
+      summary: Create a strategy
+      description: Create a new strategy.
       requestBody:
         required: true
         content:
@@ -61,7 +40,7 @@ paths:
     get:
       tags:
         - Strategy Management
-      summary: Get a strategy by ID
+      summary: Get strategy details
       description: Retrieve the details of a specific strategy.
       parameters:
         - name: strategyId
@@ -81,7 +60,7 @@ paths:
       tags:
         - Strategy Management
       summary: Update a strategy
-      description: Update the details of an existing strategy.
+      description: Update an existing strategy.
       parameters:
         - name: strategyId
           in: path
@@ -117,105 +96,12 @@ paths:
       responses:
         '204':
           description: Strategy deleted successfully
-  /api/strategy-management/v1/strategy-types:
-    get:
-      tags:
-        - Strategy Management
-      summary: List all strategy types
-      description: Retrieve a list of all strategy types.
-      responses:
-        '200':
-          description: A list of strategy types
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StrategyType'
-    post:
-      tags:
-        - Strategy Management
-      summary: Create a new strategy type
-      description: Create a new strategy type.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StrategyType'
-      responses:
-        '201':
-          description: Strategy type created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StrategyType'
-  /api/strategy-management/v1/strategy-types/{strategyTypeId}:
-    get:
-      tags:
-        - Strategy Management
-      summary: Get a strategy type by ID
-      description: Retrieve the details of a specific strategy type.
-      parameters:
-        - name: strategyTypeId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Strategy type details retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StrategyType'
-    put:
-      tags:
-        - Strategy Management
-      summary: Update a strategy type
-      description: Update the details of an existing strategy type.
-      parameters:
-        - name: strategyTypeId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StrategyType'
-      responses:
-        '200':
-          description: Strategy type updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StrategyType'
-    delete:
-      tags:
-        - Strategy Management
-      summary: Delete a strategy type
-      description: Delete a specific strategy type.
-      parameters:
-        - name: strategyTypeId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '204':
-          description: Strategy type deleted successfully
   /api/strategy-management/v1/strategy-parameters:
     get:
       tags:
         - Strategy Management
-      summary: List all strategy parameters
-      description: Retrieve a list of all strategy parameters.
+      summary: List strategy parameters
+      description: Retrieve a list of strategy parameters.
       responses:
         '200':
           description: A list of strategy parameters
@@ -228,7 +114,7 @@ paths:
     post:
       tags:
         - Strategy Management
-      summary: Create a new strategy parameter
+      summary: Create a strategy parameter
       description: Create a new strategy parameter.
       requestBody:
         required: true
@@ -247,7 +133,7 @@ paths:
     get:
       tags:
         - Strategy Management
-      summary: Get a strategy parameter by ID
+      summary: Get strategy parameter details
       description: Retrieve the details of a specific strategy parameter.
       parameters:
         - name: parameterId
@@ -267,7 +153,7 @@ paths:
       tags:
         - Strategy Management
       summary: Update a strategy parameter
-      description: Update the details of an existing strategy parameter.
+      description: Update an existing strategy parameter.
       parameters:
         - name: parameterId
           in: path
@@ -313,63 +199,23 @@ components:
           format: uuid
         name:
           type: string
-          example: "My Custom Strategy"
         description:
           type: string
-          example: "A custom strategy designed for specific market conditions."
-        strategyType:
-          type: string
-          description: "Type of the strategy, e.g., 'technical', 'fundamental', 'quantitative'."
         type:
           type: string
-          enum: [system, user]
-        visibility:
-          type: string
-          enum: [private, public, restricted]
-        ownerId:
-          type: string
-          format: uuid
-          nullable: true
-          description: "ID of the user who created the strategy. Null for system-defined strategies."
-        allowedUsers:
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: "List of user IDs who can access the strategy. Used for restricted strategies."
         tags:
           type: array
           items:
             type: string
-          description: "List of tags associated with the strategy."
         parameters:
           type: array
           items:
-            $ref: '#/components/schemas/StrategyParameter'
-        createdAt:
-          type: string
-          format: date-time
-          description: "When the strategy was created."
-        updatedAt:
-          type: string
-          format: date-time
-          description: "When the strategy was last updated."
-        isDeleted:
-          type: boolean
-          description: "Boolean field indicating if the strategy is deleted or not."
-        status:
-          type: string
-          enum: [ACTIVE, INACTIVE, DELETED]
-    StrategyType:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        description:
-          type: string
+            type: object
+            properties:
+              parameterName:
+                type: string
+              parameterValue:
+                type: string
         createdAt:
           type: string
           format: date-time
@@ -389,29 +235,29 @@ components:
           format: uuid
         name:
           type: string
-          description: "Name of the parameter."
         type:
           type: string
-          description: "Type of the parameter, e.g., 'technical', 'fundamental'."
         allowedValues:
           type: array
           items:
-            type: string
-          description: "List of allowed values for the parameter."
+            type: object
+            properties:
+              value:
+                type: string
+              displayText:
+                type: string
+              displayOrder:
+                type: integer
         isMultiSelect:
           type: boolean
-          description: "Boolean value indicating if multiple values can be selected for the parameter."
         createdAt:
           type: string
           format: date-time
-          description: "When the parameter was created."
         updatedAt:
           type: string
           format: date-time
-          description: "When the parameter was last updated."
         isDeleted:
           type: boolean
-          description: "Boolean field indicating if the parameter is deleted or not."
         status:
           type: string
           enum: [ACTIVE, INACTIVE, DELETED]
