@@ -1,0 +1,237 @@
+openapi: 3.0.3
+info:
+  title: Backtesting API
+  version: 1.0.0
+paths:
+  /api/backtesting/v1/backtests:
+    post:
+      tags:
+        - Backtesting
+      summary: Execute a backtest
+      description: Execute a strategy with given parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecuteBacktestRequest'
+      responses:
+        '201':
+          description: Backtest initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Backtest'
+  /api/backtesting/v1/backtests/{backtestId}:
+    get:
+      tags:
+        - Backtesting
+      summary: Get backtest details
+      description: Retrieve the details and results of a specific backtest.
+      parameters:
+        - name: backtestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Backtest details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Backtest'
+    delete:
+      tags:
+        - Backtesting
+      summary: Delete a backtest
+      description: Delete a specific backtest.
+      parameters:
+        - name: backtestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Backtest deleted successfully
+components:
+  schemas:
+    ExecuteBacktestRequest:
+      type: object
+      properties:
+        strategyId:
+          type: string
+          format: uuid
+          description: "ID of the strategy to be backtested."
+        startingCapital:
+          type: object
+          properties:
+            currencyCode:
+              type: string
+              description: "ISO currency code."
+            value:
+              type: number
+              format: float
+              description: "Starting capital value."
+          required:
+            - currencyCode
+            - value
+        maxStocksToHold:
+          type: integer
+          maximum: 1000
+          description: "Maximum number of stocks to hold."
+        exitRank:
+          type: integer
+          description: "Exit rank."
+        rebalanceFrequency:
+          type: object
+          properties:
+            unit:
+              type: string
+              enum: [days, weeks, months, years]
+              description: "Units for rebalance frequency."
+            value:
+              type: integer
+              description: "Value for rebalance frequency."
+          required:
+            - unit
+            - value
+    Backtest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        strategyId:
+          type: string
+          format: uuid
+        startingCapital:
+          type: object
+          properties:
+            currencyCode:
+              type: string
+            value:
+              type: number
+              format: float
+        maxStocksToHold:
+          type: integer
+        exitRank:
+          type: integer
+        rebalanceFrequency:
+          type: object
+          properties:
+            unit:
+              type: string
+              enum: [days, weeks, months, years]
+            value:
+              type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        isDeleted:
+          type: boolean
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, DELETED]
+        executionStatus:
+          type: string
+          enum: [NEW, IN_PROGRESS, COMPLETED]
+        results:
+          type: object
+          properties:
+            technicalData:
+              type: object
+              properties:
+                performanceData:
+                  type: object
+                  additionalProperties:
+                    type: number
+                drawdownData:
+                  type: object
+                  additionalProperties:
+                    type: number
+                overallGainPercent:
+                  type: number
+                  example: 200
+                cagrPercent:
+                  type: number
+                  example: 18
+                totalTrades:
+                  type: integer
+                  example: 150
+                winLossRatio:
+                  type: string
+                  example: "51:49"
+                avgProfitPercent:
+                  type: number
+                  example: 20
+                avgLossPercent:
+                  type: number
+                  example: 10
+                maxProfitPercent:
+                  type: number
+                  example: 300
+                maxLossPercent:
+                  type: number
+                  example: -30
+                avgHoldingPeriod:
+                  type: integer
+                  example: 120
+                maxHoldingPeriod:
+                  type: integer
+                  example: 400
+                profitFactor:
+                  type: number
+                  example: 1.5
+                sharpeRatio:
+                  type: number
+                  example: 2.1
+            tradeData:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  quantity:
+                    type: integer
+                  entryDate:
+                    type: string
+                    format: date
+                  entryPrice:
+                    type: number
+                    format: float
+                  exitDate:
+                    type: string
+                    format: date
+                  exitPrice:
+                    type: number
+                    format: float
+                  netPnL:
+                    type: number
+                    format: float
+                  netPnLPercent:
+                    type: number
+                    format: float
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 8
+          maxLength: 8
+        message:
+          type: string
+          minLength: 3
+          maxLength: 1000
+        debugId:
+          type: string
+          format: uuid
+          minLength: 36
+          maxLength: 36
