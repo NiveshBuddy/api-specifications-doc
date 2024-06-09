@@ -6,7 +6,7 @@ paths:
   /api/strategy-management/v1/strategies:
     get:
       tags:
-        - Strategies
+        - Strategy Management
       summary: List all strategies
       description: Retrieve a list of all strategies, both system-defined and user-defined.
       parameters:
@@ -41,7 +41,7 @@ paths:
                   $ref: '#/components/schemas/Strategy'
     post:
       tags:
-        - Strategies
+        - Strategy Management
       summary: Create a new strategy
       description: Create a new custom strategy.
       requestBody:
@@ -60,7 +60,7 @@ paths:
   /api/strategy-management/v1/strategies/{strategyId}:
     get:
       tags:
-        - Strategies
+        - Strategy Management
       summary: Get a strategy by ID
       description: Retrieve the details of a specific strategy.
       parameters:
@@ -79,7 +79,7 @@ paths:
                 $ref: '#/components/schemas/Strategy'
     put:
       tags:
-        - Strategies
+        - Strategy Management
       summary: Update a strategy
       description: Update the details of an existing strategy.
       parameters:
@@ -104,7 +104,7 @@ paths:
                 $ref: '#/components/schemas/Strategy'
     delete:
       tags:
-        - Strategies
+        - Strategy Management
       summary: Delete a strategy
       description: Delete a specific strategy.
       parameters:
@@ -120,7 +120,7 @@ paths:
   /api/strategy-management/v1/strategy-types:
     get:
       tags:
-        - Strategy Types
+        - Strategy Management
       summary: List all strategy types
       description: Retrieve a list of all strategy types.
       responses:
@@ -134,7 +134,7 @@ paths:
                   $ref: '#/components/schemas/StrategyType'
     post:
       tags:
-        - Strategy Types
+        - Strategy Management
       summary: Create a new strategy type
       description: Create a new strategy type.
       requestBody:
@@ -153,7 +153,7 @@ paths:
   /api/strategy-management/v1/strategy-types/{strategyTypeId}:
     get:
       tags:
-        - Strategy Types
+        - Strategy Management
       summary: Get a strategy type by ID
       description: Retrieve the details of a specific strategy type.
       parameters:
@@ -172,7 +172,7 @@ paths:
                 $ref: '#/components/schemas/StrategyType'
     put:
       tags:
-        - Strategy Types
+        - Strategy Management
       summary: Update a strategy type
       description: Update the details of an existing strategy type.
       parameters:
@@ -197,7 +197,7 @@ paths:
                 $ref: '#/components/schemas/StrategyType'
     delete:
       tags:
-        - Strategy Types
+        - Strategy Management
       summary: Delete a strategy type
       description: Delete a specific strategy type.
       parameters:
@@ -210,6 +210,99 @@ paths:
       responses:
         '204':
           description: Strategy type deleted successfully
+  /api/strategy-management/v1/strategy-parameters:
+    get:
+      tags:
+        - Strategy Management
+      summary: List all strategy parameters
+      description: Retrieve a list of all strategy parameters.
+      responses:
+        '200':
+          description: A list of strategy parameters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StrategyParameter'
+    post:
+      tags:
+        - Strategy Management
+      summary: Create a new strategy parameter
+      description: Create a new strategy parameter.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyParameter'
+      responses:
+        '201':
+          description: Strategy parameter created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrategyParameter'
+  /api/strategy-management/v1/strategy-parameters/{parameterId}:
+    get:
+      tags:
+        - Strategy Management
+      summary: Get a strategy parameter by ID
+      description: Retrieve the details of a specific strategy parameter.
+      parameters:
+        - name: parameterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Strategy parameter details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrategyParameter'
+    put:
+      tags:
+        - Strategy Management
+      summary: Update a strategy parameter
+      description: Update the details of an existing strategy parameter.
+      parameters:
+        - name: parameterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyParameter'
+      responses:
+        '200':
+          description: Strategy parameter updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrategyParameter'
+    delete:
+      tags:
+        - Strategy Management
+      summary: Delete a strategy parameter
+      description: Delete a specific strategy parameter.
+      parameters:
+        - name: parameterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Strategy parameter deleted successfully
 components:
   schemas:
     Strategy:
@@ -250,7 +343,9 @@ components:
             type: string
           description: "List of tags associated with the strategy."
         parameters:
-          type: object
+          type: array
+          items:
+            $ref: '#/components/schemas/StrategyParameter'
         createdAt:
           type: string
           format: date-time
@@ -261,23 +356,10 @@ components:
           description: "When the strategy was last updated."
         isDeleted:
           type: boolean
-          description: "Indicates whether the strategy is deleted."
+          description: "Boolean field indicating if the strategy is deleted or not."
         status:
           type: string
           enum: [ACTIVE, INACTIVE, DELETED]
-          description: "Status of the strategy."
-      required:
-        - id
-        - name
-        - description
-        - strategyType
-        - type
-        - visibility
-        - parameters
-        - createdAt
-        - updatedAt
-        - isDeleted
-        - status
     StrategyType:
       type: object
       properties:
@@ -286,13 +368,53 @@ components:
           format: uuid
         name:
           type: string
-          example: "Technical"
         description:
           type: string
-          example: "Strategies based on technical analysis."
-      required:
-        - id
-        - name
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        isDeleted:
+          type: boolean
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, DELETED]
+    StrategyParameter:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: "Name of the parameter."
+        type:
+          type: string
+          description: "Type of the parameter, e.g., 'technical', 'fundamental'."
+        allowedValues:
+          type: array
+          items:
+            type: string
+          description: "List of allowed values for the parameter."
+        isMultiSelect:
+          type: boolean
+          description: "Boolean value indicating if multiple values can be selected for the parameter."
+        createdAt:
+          type: string
+          format: date-time
+          description: "When the parameter was created."
+        updatedAt:
+          type: string
+          format: date-time
+          description: "When the parameter was last updated."
+        isDeleted:
+          type: boolean
+          description: "Boolean field indicating if the parameter is deleted or not."
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, DELETED]
     ErrorResponse:
       type: object
       properties:
@@ -309,7 +431,3 @@ components:
           format: uuid
           minLength: 36
           maxLength: 36
-      required:
-        - code
-        - message
-        - debugId
