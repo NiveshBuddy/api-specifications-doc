@@ -244,8 +244,28 @@ components:
             type: string
             format: uuid
           description: "List of user IDs who can access the strategy. Used for restricted strategies."
+        tags:
+          type: array
+          items:
+            type: string
+          description: "List of tags associated with the strategy."
         parameters:
           type: object
+        createdAt:
+          type: string
+          format: date-time
+          description: "When the strategy was created."
+        updatedAt:
+          type: string
+          format: date-time
+          description: "When the strategy was last updated."
+        isDeleted:
+          type: boolean
+          description: "Indicates whether the strategy is deleted."
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, DELETED]
+          description: "Status of the strategy."
       required:
         - id
         - name
@@ -254,6 +274,10 @@ components:
         - type
         - visibility
         - parameters
+        - createdAt
+        - updatedAt
+        - isDeleted
+        - status
     StrategyType:
       type: object
       properties:
